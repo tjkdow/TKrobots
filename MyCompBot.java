@@ -122,7 +122,10 @@ public class MyCompBot extends AdvancedRobot
 		// normalize the turn to take the shortest path there
 		setTurnGunRight(normalizeBearing(gunTurn));
 	    //
-		setFire(Math.min(400 / enemy.getDistance(), 3));
+		// if the gun is cool and we're pointed at the target, shoot!
+		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
+			setFire(Math.min(400 / enemy.getDistance(), 3));
+		}
 	    // Fire directly at target
 	    //fire ( 2 ) ;
 		/*
