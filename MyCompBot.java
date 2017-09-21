@@ -1,6 +1,7 @@
 package TK;
 import robocode.*;
 import java.awt.Color;
+import java.awt.geom.Point2D;
 
 // API help : http://robocode.sourceforge.net/docs/robocode/robocode/Robot.html
 
@@ -13,7 +14,7 @@ public class MyCompBot extends AdvancedRobot
 	int toggleDirection = 1;
 	int gunDirection = 1;
 	private byte scanDirection = 1;
-	private EnemyBot enemy = new EnemyBot();
+	private AdvancedEnemyBot enemy = new AdvancedEnemyBot();
 	/**
 	 * run: CompBot's default behavior
 	 */
@@ -73,6 +74,27 @@ public class MyCompBot extends AdvancedRobot
 		while (angle < -180) angle += 360;
 		return angle;
 	}
+	
+	// computes the absolute bearing between two points
+	public double absoluteBearing(double x1, double y1, double x2, double y2) {
+		double xo = x2-x1;
+		double yo = y2-y1;
+		double hyp = Point2D.distance(x1, y1, x2, y2);
+		double arcSin = Math.toDegrees(Math.asin(xo / hyp));
+		double bearing = 0;
+	
+		if (xo > 0 && yo > 0) { // both pos: lower-Left
+			bearing = arcSin;
+		} else if (xo < 0 && yo > 0) { // x neg, y pos: lower-right
+			bearing = 360 + arcSin; // arcsin is negative here, actually 360 - ang
+		} else if (xo > 0 && yo < 0) { // x pos, y neg: upper-left
+			bearing = 180 - arcSin;
+		} else if (xo < 0 && yo < 0) { // both neg: upper-right
+			bearing = 180 - arcSin; // arcsin is negative here, actually 180 + ang
+		}
+	
+		return bearing;
+	}
 
 	/**
 	 * onScannedRobot: What to do when you see another robot
@@ -91,18 +113,14 @@ public class MyCompBot extends AdvancedRobot
 			setTurnGunLeft(e.getBearing());
 		}
 		*/
-		// if we have no enemy or we found the one we're tracking..
 		
-		if (
-			// we have no enemy, or..
-			enemy.none() ||
-			// the one we just spotted is closer, or..
-			e.getDistance() < enemy.getDistance() - 70 ||
-			// we found the one we've been tracking..
-			e.getName().equals(enemy.getName())
-			) {
-			// track him!
-			enemy.update(e);
+		// track if we have no enemy, the one we found is significantly
+		// closer, or we scanned the one we've been tracking.
+		if ( enemy.none() || e.getDistance() < enemy.getDistance() - 70 ||
+				e.getName().equals(enemy.getName())) {
+	
+			// track him using the NEW update method
+			enemy.update(e, this);
 		}
 		
 
@@ -118,13 +136,26 @@ public class MyCompBot extends AdvancedRobot
 	    //setTurnGunRight(99999*gunDirection);
 		//setTurnGunRight(getHeading() - getGunHeading() + e.getBearing());
 		//  calculate gun turn toward enemy
-		double gunTurn = getHeading() - getGunHeading() + e.getBearing();
-		// normalize the turn to take the shortest path there
-		setTurnGunRight(normalizeBearing(gunTurn));
+		
+		// calculate firepower based on distance
+		double firePower = Math.min(500 / enemy.getDistance(), 3);
+		// calculate speed of bullet
+		double bulletSpeed = 20 - firePower * 3;
+		// distance = rate * time, solved for time
+		long time = (long)(enemy.getDistance() / bulletSpeed);
+
+		// calculate gun turn to predicted x,y location
+		double futureX = enemy.getFutureX(time);
+		double futureY = enemy.getFutureY(time);
+		double absDeg = absoluteBearing(getX(), getY(), futureX, futureY);
+		// turn the gun to the predicted x,y location
+		setTurnGunRight(normalizeBearing(absDeg - getGunHeading()));
 	    //
+		
+
 		// if the gun is cool and we're pointed at the target, shoot!
 		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
-			setFire(Math.min(400 / enemy.getDistance(), 3));
+			setFire(firePower);
 		}
 	    // Fire directly at target
 	    //fire ( 2 ) ;
