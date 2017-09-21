@@ -2,6 +2,8 @@ package TK;
 import robocode.*;
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.io.*;
+import java.text.NumberFormat;
 
 // API help : http://robocode.sourceforge.net/docs/robocode/robocode/Robot.html
 
@@ -15,6 +17,8 @@ public class MyCompBot extends AdvancedRobot
 	int gunDirection = 1;
 	private byte scanDirection = 1;
 	private AdvancedEnemyBot enemy = new AdvancedEnemyBot();
+	private PrintStream ps;
+	private NumberFormat f;
 	/**
 	 * run: CompBot's default behavior
 	 */
@@ -26,6 +30,21 @@ public class MyCompBot extends AdvancedRobot
 		
 		setAdjustRadarForRobotTurn(true);
 		enemy.reset();
+		File file;
+		try {
+			file = getDataFile("output.dat");
+			RobocodeFileOutputStream roboOutput = new RobocodeFileOutputStream(file);
+			ps = new PrintStream(roboOutput);
+	    }
+		catch (IOException ex) {
+	      //System.out.println("There was a problem creating/writing to the temp file");
+	      ex.printStackTrace();
+	    }
+		f = NumberFormat.getNumberInstance();
+
+		f.setMaximumFractionDigits(2);
+
+
 		while (true) {
 			/*
 			double turn = getHeading() - getRadarHeading() + enemy.getBearing();
@@ -152,7 +171,9 @@ public class MyCompBot extends AdvancedRobot
 		setTurnGunRight(normalizeBearing(absDeg - getGunHeading()));
 	    //
 		
-
+		ps.println("Tracking: " + enemy.getName() + " at (x,y) (" + 
+		f.format(enemy.getX()) + ", " + f.format(enemy.getY()) + ")");
+		
 		// if the gun is cool and we're pointed at the target, shoot!
 		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
 			setFire(firePower);
@@ -170,6 +191,7 @@ public class MyCompBot extends AdvancedRobot
 	    // Track the energy level
 	    oldEnergyLevel = e.getEnergy();
 		//execute();
+		if (ps != null) ps.close();
 	}
 
 	/**
