@@ -119,7 +119,8 @@ public class MyCompBot extends AdvancedRobot
 	 * onScannedRobot: What to do when you see another robot
 	 */
 	public void onScannedRobot(ScannedRobotEvent e) {
-		setTurnRight(e.getBearing()+90-30*toggleDirection);
+		//setTurnRight(e.getBearing()+90-30*toggleDirection);
+		setTurnRight(normalizeBearing(enemy.getBearing() + 90-30*toggleDirection));
 		//scanDirection *= -1; // change value from 1 to -1
 		//setTurnRadarRight(360 * scanDirection);
 		//setTurnRadarRight(getHeading() - getRadarHeading() + e.getBearing());
@@ -191,7 +192,7 @@ public class MyCompBot extends AdvancedRobot
 	    // Track the energy level
 	    oldEnergyLevel = e.getEnergy();
 		//execute();
-		if (ps != null) ps.close();
+
 	}
 
 	/**
@@ -218,5 +219,13 @@ public class MyCompBot extends AdvancedRobot
 			enemy.reset();
 		}
 	
-}
+	}
+	
+	public void OnWin(WinEvent evnt){
+		if (ps != null) ps.close();
+	}
+	
+	public void OnDeath(DeathEvent evnt){
+		if (ps != null) ps.close();
+	}
 }
