@@ -63,7 +63,7 @@ public class MyCompBot extends AdvancedRobot
 	    //gunDirection = -gunDirection;
 	    //setTurnGunRight(99999*gunDirection);
 		setTurnGunRight(getHeading() - getGunHeading() + e.getBearing());
-	     
+	    //
 	    // Fire directly at target
 	    fire ( 2 ) ;
 		/*
