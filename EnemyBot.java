@@ -1,13 +1,13 @@
 package TK;
 import robocode.*;
-//import java.awt.Color;
+import java.awt.Color;
 
 // API help : http://robocode.sourceforge.net/docs/robocode/robocode/Robot.html
 
 /**
  * EnemyBot - a robot by (your name here)
  */
-public class EnemyBot extends AdvancedRobot {
+public class EnemyBot {
 
 	private double bearing;
 	private double distance;
@@ -15,7 +15,7 @@ public class EnemyBot extends AdvancedRobot {
 	private double heading;
 	private String name;
 	private double velocity;
-	private EnemyBot enemy = new EnemyBot();
+	//private EnemyBot enemy = new EnemyBot();
 	private byte scanDirection = 1;
 	
 	public EnemyBot (){
@@ -75,6 +75,7 @@ public class EnemyBot extends AdvancedRobot {
 	/**
 	 * run: EnemyBot's default behavior
 	 */
+	/*
 	public void run() {
 		// Initialization of the robot should be put here
 
@@ -84,7 +85,7 @@ public class EnemyBot extends AdvancedRobot {
 		// setColors(Color.red,Color.blue,Color.green); // body,gun,radar
 
 		// Robot main loop
-		setAdjustRadarForRobotTurn(true);
+		//setAdjustRadarForRobotTurn(true);
 		enemy.reset();
 		while(true) {
 			double turn = getHeading() - getRadarHeading() + enemy.getBearing();
@@ -94,10 +95,12 @@ public class EnemyBot extends AdvancedRobot {
 			execute();
 		}
 	}
-
+	*/
+	
 	/**
 	 * onScannedRobot: What to do when you see another robot
 	 */
+	/*
 	public void onScannedRobot(ScannedRobotEvent e) {
 		if (
 			// we have no enemy, or..
@@ -119,20 +122,25 @@ public class EnemyBot extends AdvancedRobot {
 			enemy.reset();
 		}
 	}
+	*/
 
 	/**
 	 * onHitByBullet: What to do when you're hit by a bullet
 	 */
+	/*
 	public void onHitByBullet(HitByBulletEvent e) {
 		// Replace the next line with any behavior you would like
 		back(10);
 	}
+	*/
 	
 	/**
 	 * onHitWall: What to do when you hit a wall
 	 */
+	/*
 	public void onHitWall(HitWallEvent e) {
 		// Replace the next line with any behavior you would like
 		back(20);
 	}	
+	*/
 }
